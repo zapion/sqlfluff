@@ -1,8 +1,9 @@
 """Implementation of Rule L019."""
 
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional, Tuple
 
 from sqlfluff.core.parser import WhitespaceSegment
+from sqlfluff.core.parser.segments.base import BaseSegment
 
 from sqlfluff.core.rules.base import BaseRule, LintFix, LintResult
 from sqlfluff.core.rules.doc_decorators import (
@@ -52,10 +53,10 @@ class Rule_L019(BaseRule):
 
     """
 
-    config_keywords = ["comma_style"]
+    config_keywords: List[str] = ["comma_style"]
 
     @staticmethod
-    def _last_comment_seg(raw_stack):
+    def _last_comment_seg(raw_stack: Tuple[BaseSegment]) -> Optional[BaseSegment]:
         """Trace the raw stack back to the most recent comment segment.
 
         A return value of `None` indicates no code segments preceding the current position.
@@ -66,7 +67,7 @@ class Rule_L019(BaseRule):
         return None
 
     @staticmethod
-    def _last_code_seg(raw_stack):
+    def _last_code_seg(raw_stack: Tuple[BaseSegment]) -> Optional[BaseSegment]:
         """Trace the raw stack back to the most recent code segment.
 
         A return value of `None` indicates no code segments preceding the current position.
@@ -76,7 +77,13 @@ class Rule_L019(BaseRule):
                 return segment
         return None
 
-    def _eval(self, segment, raw_stack, memory, **kwargs):
+    def _eval(
+        self,
+        segment: BaseSegment,
+        raw_stack: Tuple[BaseSegment],
+        memory: Dict[Any],
+        **kwargs
+    ) -> Optional[LintResult]:
         """Enforce comma placement.
 
         For leading commas we're looking for trailing commas, so
