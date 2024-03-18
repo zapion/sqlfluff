@@ -365,6 +365,20 @@ class ColumnDefinitionSegment(BaseSegment):
     )
 
 
+class AliasSelectStatementSegment(BaseSegment):
+    """Follow by Create Table As Select Statement.
+
+    https://dev.mysql.com/doc/refman/8.0/en/create-table-select.html
+    """
+
+    match_grammar = Sequence(
+        Ref.keyword("AS", optional=True),
+        OptionallyBracketed(
+            Ref("SelectStatementSegment"),
+        ),
+    )
+
+
 class CreateTableStatementSegment(ansi.CreateTableStatementSegment):
     """Create table segment.
 
@@ -379,6 +393,7 @@ class CreateTableStatementSegment(ansi.CreateTableStatementSegment):
                     Ref("ParameterNameSegment"),
                     Ref("EqualsSegment", optional=True),
                     OneOf(Ref("LiteralGrammar"), Ref("ParameterNameSegment")),
+                    Ref("AliasSelectStatementSegment", optional=True),
                 ),
             ),
         ],
